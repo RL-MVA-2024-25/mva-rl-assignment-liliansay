@@ -3,7 +3,6 @@ import pickle
 from sklearn.ensemble import RandomForestRegressor
 from tqdm import tqdm
 import gc
-import gzip
 
 from gymnasium.wrappers import TimeLimit
 from env_hiv import HIVPatient
@@ -97,12 +96,12 @@ class ProjectAgent:
             return np.argmax(Qsa)
 
     def save(self, path):
-        with gzip.open(f"./model/{path}.gz", "wb") as f:
+        with open(f"./model/{path}", "wb") as f:
             pickle.dump(self.Qfunctions, f)
-        print(f"Q-functions saved to {path}.gz")
+        print(f"Q-functions saved to {path}")
 
     def load(self):
         path = "trained_agent.pkl"
-        with gzip.open(f"./model/{path}.gz", "rb") as f:
+        with open(f"./model/{path}", "rb") as f:
             self.Qfunctions = pickle.load(f)
-        print(f"Q-functions loaded from {path}.gz")
+        print(f"Q-functions loaded from {path}")
