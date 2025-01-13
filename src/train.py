@@ -97,12 +97,12 @@ class ProjectAgent:
             return np.argmax(Qsa)
 
     def save(self, path):
-        with gzip.open(f"{path}.gz", "wb") as f:
+        with gzip.open(f"./model/{path}.gz", "wb") as f:
             pickle.dump(self.Qfunctions, f)
         print(f"Q-functions saved to {path}.gz")
 
     def load(self):
         path = "trained_agent.pkl"
-        with gzip.open(f"{path}.gz", "rb") as f:
+        with gzip.open(f".model/{path}.gz", "rb") as f:
             self.Qfunctions = pickle.load(f)
         print(f"Q-functions loaded from {path}.gz")
