@@ -103,6 +103,6 @@ class ProjectAgent:
 
     def load(self):
         path = "trained_agent.pkl"
-        with gzip.open(f".model/{path}.gz", "rb") as f:
+        with gzip.open(f"./model/{path}.gz", "rb") as f:
             self.Qfunctions = pickle.load(f)
         print(f"Q-functions loaded from {path}.gz")
