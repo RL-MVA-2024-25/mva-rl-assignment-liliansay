@@ -1,8 +1,9 @@
 import numpy as np
-import pickle
 from sklearn.ensemble import RandomForestRegressor
 from tqdm import tqdm
 import gc
+from huggingface_hub import hf_hub_download, HfApi
+import joblib
 
 from gymnasium.wrappers import TimeLimit
 from env_hiv import HIVPatient
@@ -53,7 +54,7 @@ class ProjectAgent:
         D = np.array(D)
         return S, A, R, S2, D
 
-    def train(self, nb_iter, initial_horizon=5000, incremental_horizon=1000, exploration_prob=0.2):
+    def train(self, nb_iter, initial_horizon=10000, incremental_horizon=1000, exploration_prob=0.2):
         S, A, R, S2, D = self.collect_samples(horizon=initial_horizon)
         SA = np.append(S, A, axis=1)
 
@@ -96,12 +97,20 @@ class ProjectAgent:
             return np.argmax(Qsa)
 
     def save(self, path):
-        with open(f"./model/{path}", "wb") as f:
-            pickle.dump(self.Qfunctions, f)
-        print(f"Q-functions saved to {path}")
+        joblib.dump(self.Qfunctions[-1], f"./model/{path}")
+        api = HfApi()
+        api.upload_file(
+            path_or_fileobj=f"./model/{path}",
+            path_in_repo=f"{path}",
+            repo_id="liliansay/random-forest-model",
+            repo_type="model",
+        )
 
     def load(self):
-        path = "trained_agent.pkl"
-        with open(f"./model/{path}", "rb") as f:
-            self.Qfunctions = pickle.load(f)
-        print(f"Q-functions loaded from {path}")
+        REPO_ID = "liliansay/random-forest-model"
+        FILENAME = "trained_agent.joblib"
+
+        model = joblib.load(
+            hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
+        )
+        self.Qfunctions.append(model)

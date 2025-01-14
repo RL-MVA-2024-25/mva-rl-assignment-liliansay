@@ -6,4 +6,4 @@ if __name__ == "__main__":
     print("Training the agent with FQI...")
     agent.train(nb_iter=100)
 
-    agent.save("trained_agent.pkl")
+    agent.save("trained_agent.joblib")
